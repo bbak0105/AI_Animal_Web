@@ -1,8 +1,16 @@
 # Teachable Machine을 활용한 닮은 동물상 찾기 웹 사이트 제작
 
+⚠️ nelify에 배포되어 직접 확인하실 수 있습니다. 가끔 로딩이 길어지면 [Predict] 버튼을 한번 더 눌러주세요. <br/>
+https://serene-speculoos-fcd4b9.netlify.app/
+
+<br/>
+
 ## 📌 Preivew
 
+<img width="1030" alt="스크린샷 2024-03-10 오후 10 27 30" src="https://github.com/bbak0105/AI_Animal_Web/assets/66405572/d62f4193-a1f9-420d-8377-fa19aa100736">
+<img width="1256" alt="스크린샷 2024-03-11 오후 12 20 54" src="https://github.com/bbak0105/AI_Animal_Web/assets/66405572/3ae09270-5fef-4566-a4a7-878d07d3f8c3">
 
+<br/>
 <br/>
 
 ## 📌 Skills
@@ -159,6 +167,3 @@ async function predict() {
   document.getElementById("progress").style.display = 'none';
 }
 ```
-
----
-
