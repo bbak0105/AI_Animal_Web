@@ -22,31 +22,139 @@
 
 <br/>
 
-## 📌 Backend Descriptions
-### `Crawler`
-> ✏️ 네이버 검색창처럼 사용자에게 검색을 받고, 원하는 개수 만큼 '네이버 뉴스'의 내용을 BeautifulSoup을 사용하여 스크랩합니다. <br/>
-> 1페이지당 10개씩이기 때문에, 91개로 설정시에 총 10페이지를 긁어 오게 됩니다. <br/>
-> 양이 많아질 수록 대기 시간이 오래 걸립니다. <br/>
-> 1. request 라이브러리를 사용하여 사용자가 form 태그(프론트)에서 검색한 키워드를 가져옵니다. 
-> 2. contents_cleansing(contents=내용들) : 스크랩 된 내용을 정제화 해주는 함수 입니다.
-> 3. crawler(maxNum=최대개수설정, query=사용자가검색한키워드쿼리, sort=정렬, s_date=시작날짜, e_date=종료날짜) 
+## 📌 Descriptions
+⚠️ 다소 급하게 진행헀던 팀프로젝트여서, 코드 리팩토링이 전혀 되어있지 않습니다.  <br/>
+예시로, const로 보통 작성하는 편인데 var로 작성되어 있습니다. <br/>
+헤딩 영상을 참고하여 만들었습니다. https://youtu.be/OI3fZJHQF8Y?feature=shared
 
 <br/>
 
-```python
+### `Model Init`
+> Teachable Machine 모델을 초기화 하는 곳입니다. 예측을 진행하기 전, 티쳐블 머신 모델을 웹에 적용하는 코드입니다. <br/> 
+> model: Teachable Machine에서 학습한 모델을 저장할 변수입니다. <br/>
+> labelContainer: 결과 레이블을 표시할 HTML 요소를 나타내는 변수입니다. <br/>
+> maxPredictions: 모델이 예측할 수 있는 클래스의 최대 개수를 나타내는 변수입니다.
 
+```javaScript
+  
+// 초기화
+async function modelInit() {
+  document.getElementById("progress").style.display = 'block';
+
+  let model, webcam, labelContainer, maxPredictions;
+  const URL = 'https://teachablemachine.withgoogle.com/models/1k-_K6jgp/';
+  const modelURL = URL + 'model.json';
+  const metadataURL = URL + 'metadata.json';
+
+  model = await tmImage.load(modelURL, metadataURL);
+  maxPredictions = model.getTotalClasses();
+
+  // append elements to the DOM
+  labelContainer = document.getElementById('label-container');
+
+  for (let i = 0; i < maxPredictions; i++) {
+    // and class labels
+    labelContainer.appendChild(document.createElement('div'));
+  }
+}
+
+```
+
+---
+
+### `Predict`
+
+```javaScript
+async function predict() {
+  modelInit();
+
+  // predict can take in an image, video or canvas html element
+  const prediction = await model.predict(image, false);
+  
+  let max = {
+    per: 0,
+    index: 0
+  };
+  
+  for (let i = 0; i < maxPredictions; i++) {
+    let initClass = i + 1;
+    let initClassIndex = "#list"+initClass;
+
+    $(initClassIndex).removeClass("active");
+    
+    if(prediction[i].probability.toFixed(2) > max.per) {
+      max.per = prediction[i].probability.toFixed(2);
+      max.index = i;
+    }
+    
+    list1.innerHTML = "🐶 Dog 🐶  " + prediction[0].probability.toFixed(2);
+    list2.innerHTML = "🐈 Cat 🐈  " + prediction[1].probability.toFixed(2);
+    list3.innerHTML = "🐻 Bear 🐻  " + prediction[2].probability.toFixed(2);
+    list4.innerHTML = "🦖 Dinosaur 🦖  " + prediction[3].probability.toFixed(2);
+    list5.innerHTML = "🐰 Rabbit 🐰  " + prediction[4].probability.toFixed(2);
+  }
+  
+  let maxIndex = max.index + 1;
+  let listIndex = "#list"+maxIndex;
+  
+  $(listIndex).addClass("active");
+  document.getElementById("progress").style.display = 'none';
+}
+```
+
+---
+
+### `Photo Upload`
+> ✏️ 사진 업로드를 할 수 있는 공간입니다. 업로드가 되면 readURL 함수를 호출하여 FileReader로 파일을 읽습니다.
+
+#### ・ HTML
+
+```HTML
+<div class="file-upload">
+    <button
+        class="file-upload-btn"
+        type="button"
+        onclick="$('.file-upload-input').trigger( 'click' )"
+    >
+        Add Image
+    </button>
+
+    <div class="image-upload-wrap">
+        <input
+            class="file-upload-input"
+            type="file"
+            onchange="readURL(this);"
+            accept="image/*"
+        />
+        <div class="drag-text">
+            <h3>Drag and drop a file or select add Image</h3>
+        </div>
+    </div>
+    ...
+</div>
+```
+
+#### ・ JavaScript
+
+```javaScript
+function readURL(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        $('.image-upload-wrap').hide();
+        $('.file-upload-image').attr('src', e.target.result);
+        $('.file-upload-content').show();
+        $('.image-title').html(input.files[0].name);
+    };
+
+    reader.readAsDataURL(input.files[0]);
+    initList();
+  } else {
+    removeUpload();
+  }
+}
 ```
 ---
 
-### `Data-To-DataFrame`
-> 크롤러를 통해 긁어온 정보들을 토대로 데이터프레임을 생성합니다. <br/>
-> date(날짜), title(제목), press(언론사), contents(내용), link(하이퍼링크)로 구성된 프레임으로 생성하였습니다.
-
-<br/>
-
-```python
-col_name = ["date", "title", "press", "contents", "link"]
-rows = maxNum * 10
-target_articles = pd.DataFrame(np.reshape(df1, (rows, 5)), columns=col_name).T.to_dict()
-```
 
