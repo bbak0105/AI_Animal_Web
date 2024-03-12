@@ -21,6 +21,7 @@ https://serene-speculoos-fcd4b9.netlify.app/
 <a><img src="https://img.shields.io/badge/Goorm-66FFFF.svg?&style=for-the-badge&logoColor=white"/></a>
 
 ### Skills
+<a><img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white"/></a>
 <a><img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white"/></a>
 <a><img src="https://img.shields.io/badge/CSS-239120?&style=for-the-badge&logo=css3&logoColor=white"/></a>
 <a><img src="https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white"/></a>
